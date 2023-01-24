@@ -1,0 +1,16 @@
+{
+  "name": "tasks_app",
+  "version": "1.0.0",
+  "description": "Tasks CRUD API",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest",
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "devDependencies": {
+    "eslint": "^8.32.0",
+    "jest": "^29.4.0",
+    "nodemon": "^2.0.20"
+  }
+}
