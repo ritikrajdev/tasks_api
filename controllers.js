@@ -8,7 +8,6 @@ function getTaskListController(req, res) {
 }
 
 function createTaskController(req, res) {
-  // TODO: handle 400 in case of notParsable json
   let task = req.body;
 
   if (task.name === undefined)
@@ -34,7 +33,6 @@ function getTaskDetailController(req, res) {
 }
 
 function patchTaskController(req, res) {
-  // TODO: handle 400 in case of notParsable json
   const id = req.params.id;
 
   let jsonData = req.body;
