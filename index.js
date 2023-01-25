@@ -1,15 +1,27 @@
-const http = require('http');
+const  express = require('express');
 
 const {PORT} = require('./config');
-const {getRouteController} = require('./routes');
+const {
+  getTaskListController,
+  createTaskController,
+  getTaskDetailController,
+  patchTaskController,
+  deleteTaskController,
+} = require('./controllers');
 
-const requestHandler = (req, res) => {
-  const routeController = getRouteController(req);
-  console.log(routeController);
-  routeController(req, res);
-};
 
-const server = http.createServer(requestHandler);
-server.listen(PORT, () => {
+const app = express();
+app.use(express.json());
+
+
+app.get('/tasks',getTaskListController);
+app.post('/tasks',createTaskController);
+
+app.get('/tasks/:id', getTaskDetailController);
+app.patch('/tasks/:id', patchTaskController);
+app.delete('/tasks/:id', deleteTaskController);
+
+
+app.listen(PORT, () => {
   console.log(`server started at http://localhost:${PORT}/`);
 });
