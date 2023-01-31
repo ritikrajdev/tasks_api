@@ -11,10 +11,7 @@ async function getTaskList(req, res, next) {
     const tasks = await taskServices.getTaskList({isDone});
     res.status(200).json(tasks);
   } catch (err) {
-    if (err.name === 'InvalidInputError')
-      return res.status(400).json({message: err.message});
-    else
-      next(err);
+    next(err);
   }
 }
 
@@ -23,10 +20,7 @@ async function createTask(req, res, next) {
     const task = await taskServices.createTask(req.body.task);
     res.status(201).json(task);
   } catch (err) {
-    if (err.name === 'InvalidInputError')
-      return res.status(400).json({message: err.message});
-    else
-      next(err);
+    next(err);
   }
 }
 
@@ -35,12 +29,7 @@ async function getTaskById(req, res, next) {
     const task = await taskServices.getTaskById(req.params.taskId);
     res.status(200).json(task);
   } catch (err) {
-    if (err.name === 'InvalidInputError')
-      return res.status(400).json({message: err.message});
-    else if (err.name === 'NotFoundError')
-      return res.status(404).json({message: err.message});
-    else
-      next(err);
+    next(err);
   }
 }
 
@@ -49,12 +38,7 @@ async function editTaskById(req, res, next) {
     const task = await taskServices.editTaskById(req.params.taskId, req.body);
     res.status(200).json(task);
   } catch (err) {
-    if (err.name === 'InvalidInputError')
-      return res.status(400).json({message: err.message});
-    else if (err.name === 'NotFoundError')
-      return res.status(404).json({message: err.message});
-    else
-      next(err);
+    next(err);
   }
 }
 
@@ -63,12 +47,7 @@ async function deleteTaskById(req, res, next) {
     await taskServices.deleteTaskById(req.params.taskId);
     res.status(204).end();
   } catch (err) {
-    if (err.name === 'InvalidInputError')
-      return res.status(400).json({message: err.message});
-    else if (err.name === 'NotFoundError')
-      return res.status(404).json({message: err.message});
-    else
-      next(err);
+    next(err);
   }
 }
 
