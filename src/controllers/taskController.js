@@ -1,8 +1,14 @@
+const {InvalidInputError} = require('../errors');
 const taskServices = require('../services/taskServices');
 
 async function getTaskList(req, res, next) {
   try {
-    const tasks = await taskServices.getTaskList(req.query);
+    let {isDone} = req.query;
+    if (isDone === '0') isDone = false;
+    else if (isDone === '1') isDone = true;
+    else if (isDone !== undefined) throw InvalidInputError('isDone must be 0 or 1');
+
+    const tasks = await taskServices.getTaskList({isDone});
     res.status(200).json(tasks);
   } catch (err) {
     if (err.name === 'InvalidInputError')

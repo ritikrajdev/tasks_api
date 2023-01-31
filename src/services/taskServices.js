@@ -1,50 +1,31 @@
-const {v4} = require('uuid');
-
-const uuidV4 = v4;
-
-const {isUuidV4} = require('../utils/uuidUtils');
+const {where} = require('sequelize');
 const errors = require('../errors');
-
-let tasks = [
-  {
-    id: uuidV4(),
-    task: 'make tasks api using http module',
-    isDone: true
-  },
-  {
-    id: uuidV4(),
-    task: 'make tasks api using http module',
-    isDone: true
-  }
-];
+const db = require('../models');
 
 
-function getTaskList(filters = {isDone: undefined}) {
-  if (!['undefined', 'boolean'].includes(typeof filters.isDone))
-    throw new errors.InvalidInputError('isDone must be a boolean true/false expression.');
-
+async function getTaskList(filters = {isDone: undefined}) {
   return typeof filters.isDone === 'boolean' ?
-    tasks.filter(taskObject => taskObject.isDone === filters.isDone) :
-    tasks;
+    await db.Task.find({
+      where: {isDone: filters.isDone}
+    }) :
+    await db.Task.findAll();
 }
 
-function createTask(task) {
+async function createTask(task) {
   if (typeof task !== 'string')
     throw new errors.InvalidInputError('task must be a string.');
 
-  const taskObject = {id: uuidV4(), task, isDone: false};
-  tasks.push(taskObject);
-  return taskObject;
+  return await db.Task.create({task, isDone: false});
 }
 
-function getTaskById(taskId) {
+async function getTaskById(taskId) {
   if (typeof taskId !== 'string')
     throw new errors.InvalidInputError('taskId must be a string.');
 
-  if (!isUuidV4(taskId))
+  if (isNaN(taskId))
     throw new errors.InvalidInputError('taskId is not a valid id.');
 
-  const foundTaskObject = tasks.find(({id}) => id === taskId);
+  const foundTaskObject = await db.Task.findByPk(taskId);
 
   if (!foundTaskObject)
     throw new errors.NotFoundError(`task with ${taskId} not found.`);
@@ -52,11 +33,11 @@ function getTaskById(taskId) {
   return foundTaskObject;
 }
 
-function editTaskById(taskId, sourceTask = {task: undefined, isDone: undefined}) {
+async function editTaskById(taskId, sourceTask = {task: undefined, isDone: undefined}) {
   if (typeof taskId !== 'string')
     throw new errors.InvalidInputError('taskId must be a string.');
 
-  if (!isUuidV4(taskId))
+  if (isNaN(taskId))
     throw new errors.InvalidInputError('taskId is not a valid id.');
 
   if (!['undefined', 'string'].includes(typeof sourceTask.task))
@@ -65,38 +46,41 @@ function editTaskById(taskId, sourceTask = {task: undefined, isDone: undefined})
   if (!['undefined', 'boolean'].includes(typeof sourceTask.isDone))
     throw new errors.InvalidInputError('isDone must be a boolean true/false expression.');
 
-
-  const taskObjectIdx = tasks.findIndex(task => task.id === taskId);
-
-  if (taskObjectIdx === -1)
-    throw new errors.NotFoundError(`task with ${taskId} not found.`);
-
-  const newTaskObject = {...tasks[taskObjectIdx]};
   for (let key in sourceTask) {
-    if (newTaskObject[key] === undefined) {
+    if (!['isDone', 'task'].includes(key)) {
       throw new errors.InvalidInputError(`invalid parameter found ${key}.`);
-    } else {
-      newTaskObject[key] = sourceTask[key] ?? newTaskObject[key];
     }
   }
 
-  tasks[taskObjectIdx] = newTaskObject;
-  return newTaskObject;
+  const taskObject = await db.Task.findByPk(taskId);
+  if (!taskObject) {
+    throw new errors.NotFoundError(`task with ${taskId} not found.`);
+  }
+
+  for (let key in sourceTask) {
+    taskObject[key] = sourceTask[key];
+  }
+  taskObject.save();
+
+  return taskObject;
 }
 
-function deleteTaskById(taskId) {
+
+async function deleteTaskById(taskId) {
   if (typeof taskId !== 'string')
     throw new errors.InvalidInputError('taskId must be a string.');
 
-  if (!isUuidV4(taskId))
+  if (isNaN(taskId))
     throw new errors.InvalidInputError('taskId is not a valid id.');
 
-  const taskObjectIdx = tasks.findIndex(task => task.id === taskId);
+  const status = await db.Task.destroy({
+    'where': {
+      'id': taskId
+    }
+  });
 
-  if (taskObjectIdx === -1)
+  if (status === 0)
     throw new errors.NotFoundError(`task with ${taskId} not found.`);
-
-  tasks.pop(taskObjectIdx);
 }
 
 module.exports = {
