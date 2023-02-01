@@ -4,7 +4,8 @@ function errorHandlingMiddleware(err, req, res, next) {
   }
 
   switch (err.name) {
-  case 'InvalidInputError': {
+  case 'InvalidInputError':
+  case 'RequiredKeyError': {
     return res.status(400).json({ message: err.message });
   }
   case 'NotFoundError': {

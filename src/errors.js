@@ -12,7 +12,15 @@ class NotFoundError extends Error {
   }
 }
 
+class RequiredKeyError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = 'RequiredKeyError';
+  }
+}
+
 module.exports = {
   InvalidInputError,
-  NotFoundError
+  NotFoundError,
+  RequiredKeyError
 };
