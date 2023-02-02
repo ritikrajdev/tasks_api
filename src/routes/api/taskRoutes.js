@@ -2,7 +2,6 @@ const router = require('express').Router();
 const taskController = require('../../controllers/taskController');
 const taskSchemas = require('../../schemas/tasks.schema');
 const {validationMiddleware} = require('../../middlewares/validation.middleware');
-const { application } = require('express');
 
 router.get(
   '/',

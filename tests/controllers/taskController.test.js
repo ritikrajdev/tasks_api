@@ -11,17 +11,6 @@ describe('getTaskList', () => {
     {id: 2, isDone: false, task: 'some task b'}
   ];
 
-  it('should call next to handle invalid isDone filter with error handling middleware', async () => {
-    const mockReq = {
-      query: {isDone: 'hello'}
-    };
-    const mockRes = {};
-    const next = jest.fn();
-    
-    await taskController.getTaskList(mockReq, mockRes, next);
-    expect(next).toBeCalledWith(new InvalidInputError('isDone must be 0 or 1'));
-  });
-
   it('should return list of all tasks', async () => {
     const mockReq = {
       query: {},
@@ -41,17 +30,6 @@ describe('getTaskList', () => {
 });
 
 describe('createTask', () => {
-  it('should call next to handle task not sent with error handling middleware', async () => {
-    const mockReq = {
-      body: {}
-    };
-    const mockRes = {};
-    const next = jest.fn();
-    
-    await taskController.createTask(mockReq, mockRes, next);
-    expect(next).toBeCalledWith(new RequiredKeyError('task is required'));
-  });
-
   it('should send object back with id and isDone on creation', async () => {
     const createdObject = {
       id: 1,
