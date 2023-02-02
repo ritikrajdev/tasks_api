@@ -4,9 +4,8 @@ const taskServices = require('../services/taskServices');
 async function getTaskList(req, res, next) {
   try {
     let {isDone} = req.query;
-    if (isDone === '0') isDone = false;
-    else if (isDone === '1') isDone = true;
-    else if (isDone !== undefined) throw new InvalidInputError('isDone must be 0 or 1');
+    if (isDone)
+      isDone = isDone === '1';
 
     const tasks = await taskServices.getTaskList({isDone});
     res.status(200).json(tasks);
@@ -17,8 +16,6 @@ async function getTaskList(req, res, next) {
 
 async function createTask(req, res, next) {
   try {
-    if (!req.body.task)
-      throw new RequiredKeyError('task is required');
     const task = await taskServices.createTask(req.body.task);
     res.status(201).json(task);
   } catch (err) {

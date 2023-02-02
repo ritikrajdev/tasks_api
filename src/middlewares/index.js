@@ -1,14 +1,17 @@
+const {ValidationError} = require('joi/lib/errors');
+const {NotFoundError} = require('../errors');
+
 function errorHandlingMiddleware(err, req, res, next) {
   if (res.headersSent) {
     return next(err);
   }
 
-  switch (err.name) {
-  case 'InvalidInputError':
-  case 'RequiredKeyError': {
+  console.log(err);
+  switch (err.constructor) {
+  case ValidationError: {
     return res.status(400).json({ message: err.message });
   }
-  case 'NotFoundError': {
+  case NotFoundError: {
     return res.status(404).json({ message: err.message });
   }
   default: {
