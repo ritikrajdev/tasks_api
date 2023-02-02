@@ -17,10 +17,12 @@ describe('getTaskList', () => {
       }
     ];
 
-    jest.spyOn(Task, 'findAll')
+    const spiedFindAll = jest.spyOn(Task, 'findAll')
       .mockResolvedValue(dbReturnedValues);
 
     const returedVal = await taskServices.getTaskList();
+
+    expect(spiedFindAll).toBeCalled();
     expect(returedVal)
       .toBe(dbReturnedValues);
   });
